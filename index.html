@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utilería.js - Actividad 2 </title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="envoltura">
+    <header class="encabezado">
+      <div>
+        <div class="marca">
+          <div>
+            <h1>utilería.js</h1>
+            <p>Librería de validaciones para formularios usando lo aprendido en los ejericios :D</p>
+          </div>
+        </div>
+        <nav class="subnav">
+          <a href="index.html">Formulario</a>
+          <a href="login.html">Login</a>
+        </nav>
+      </div>
+    </header>
+
+    <section class="panel">
+      <h2 class="panel-titulo">01 · Formulario de registro</h2>
+      <p class="panel-descripcion">
+        Cada campo se valida usando las funciones de Utileria. Al enviar, se calcula la edad y se abre una ventana modal.
+      </p>
+
+      <form id="formRegistro" novalidate>
+        <div class="campo">
+          <label for="nombre">Nombre completo</label>
+          <input type="text" id="nombre" placeholder="Ej. María José López" autocomplete="off" />
+          <span class="mensaje-error" id="errorNombre"></span>
+        </div>
+
+        <div class="fila-doble">
+          <div class="campo">
+            <label for="correo">Correo electrónico</label>
+            <input type="text" id="correo" placeholder="pepitocraft@dominio.com" autocomplete="off" />
+            <span class="mensaje-error" id="errorCorreo"></span>
+          </div>
+
+          <div class="campo">
+            <label for="telefono">Teléfono (10 dígitos)</label>
+            <input type="text" id="telefono" placeholder="Ej: 9511234567" autocomplete="off" />
+            <span class="mensaje-error" id="errorTelefono"></span>
+          </div>
+        </div>
+
+        <div class="fila-doble">
+          <div class="campo">
+            <label for="fechaNacimiento">Fecha de nacimiento</label>
+            <input type="date" id="fechaNacimiento" />
+            <span class="mensaje-error" id="errorFecha"></span>
+          </div>
+
+          <div class="campo">
+            <label for="codigoPostal">Código Postal</label>
+            <input type="text" id="codigoPostal" placeholder="Ej. 68000" autocomplete="off" />
+            <span class="mensaje-error" id="errorCP"></span>
+          </div>
+        </div>
+
+        <div class="fila-doble">
+          <div class="campo">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" placeholder="Mínimo 8 caracteres" autocomplete="off" />
+            <span class="mensaje-error" id="errorPassword"></span>
+            
+            <ul class="reglas-password" id="reglasPassword">
+              <li id="regla-mayus">Mayúscula</li>
+              <li id="regla-minus">Minúscula</li>
+              <li id="regla-numero">Número</li>
+              <li id="regla-especial">Especial</li>
+              <li id="regla-longitud">8+ caracteres</li>
+            </ul>
+          </div>
+
+          <div class="campo">
+            <label for="confirmarPassword">Confirmar Contraseña</label>
+            <input type="password" id="confirmarPassword" placeholder="Repite tu contraseña" autocomplete="off" />
+            <span class="mensaje-error" id="errorConfirmar"></span>
+          </div>
+        </div>
+
+        <button type="submit" class="boton boton-primario">Registrar y calcular edad</button>
+      </form>
+    </section>
+  </div>
+
+  <div class="modal-fondo" id="modalFondo">
+    <div class="modal-caja">
+      <button class="modal-cerrar" id="modalCerrar" aria-label="Cerrar">✕</button>
+      <p class="modal-etiqueta">Edad calculada · calcularEdad()</p>
+      <p class="modal-edad" id="modalEdadNumero">--</p>
+      <p class="modal-veredicto" id="modalVeredictoTexto"></p>
+      <span class="badge" id="modalBadge"></span>
+    </div>
+  </div>
+
+  <script src="js/utileria.js"></script>
+  
+  <script>
+    const form = document.getElementById("formRegistro");
+    
+    const inputNombre = document.getElementById("nombre");
+    const inputCorreo = document.getElementById("correo");
+    const inputTelefono = document.getElementById("telefono");
+    const inputFecha = document.getElementById("fechaNacimiento");
+    const inputCP = document.getElementById("codigoPostal");
+    const inputPassword = document.getElementById("password");
+    const inputConfirmar = document.getElementById("confirmarPassword");
+
+    function marcarCampo(input, esValido) {
+      if (esValido) {
+        input.classList.add("valido");
+        input.classList.remove("invalido");
+      } else {
+        input.classList.add("invalido");
+        input.classList.remove("valido");
+      }
+    }
+
+    inputNombre.addEventListener("input", () => {
+      const valor = inputNombre.value.trim();
+      let valido = false;
+      if (valor !== "") { valido = Utileria.soloLetras(valor, true); }
+      marcarCampo(inputNombre, valido);
+      if (valido || valor === "") { document.getElementById("errorNombre").textContent = ""; } 
+      else { document.getElementById("errorNombre").textContent = "Solo se permiten letras y espacios."; }
+    });
+
+    inputCorreo.addEventListener("input", () => {
+      const valor = inputCorreo.value.trim();
+      const valido = Utileria.validarCorreo(valor);
+      if (valor === "") {
+        inputCorreo.classList.remove("valido", "invalido");
+        document.getElementById("errorCorreo").textContent = "";
+      } else {
+        marcarCampo(inputCorreo, valido);
+        if (valido) { document.getElementById("errorCorreo").textContent = ""; } 
+        else { document.getElementById("errorCorreo").textContent = "Formato de correo inválido."; }
+      }
+    });
+
+    inputTelefono.addEventListener("input", () => {
+      const valor = inputTelefono.value.trim();
+      const longitudOk = Utileria.validarLongitud(valor, 10);
+      const soloNumeros = valor.replace(/[^0-9]/g, ""); 
+      let valido = false;
+      if (valor !== "" && longitudOk && soloNumeros.length === 10) { valido = true; }
+      marcarCampo(inputTelefono, valido);
+      if (valido || valor === "") { document.getElementById("errorTelefono").textContent = ""; } 
+      else { document.getElementById("errorTelefono").textContent = "Debe tener exactamente 10 dígitos."; }
+    });
+
+    inputFecha.addEventListener("change", () => {
+      const valor = inputFecha.value;
+      if (valor !== "") {
+        const edad = Utileria.calcularEdad(valor);
+        if (!isNaN(edad)) {
+          marcarCampo(inputFecha, true);
+          document.getElementById("errorFecha").textContent = "";
+        } else {
+          marcarCampo(inputFecha, false);
+        }
+      }
+    });
+
+    // --- Validación en vivo del Código Postal ---
+    inputCP.addEventListener("input", () => {
+      const valor = inputCP.value.trim();
+      let valido = false;
+      if (valor !== "") { valido = Utileria.validarCodigoPostal(valor); }
+      marcarCampo(inputCP, valido);
+      if (valido || valor === "") { document.getElementById("errorCP").textContent = ""; } 
+      else { document.getElementById("errorCP").textContent = "Debe tener exactamente 5 números."; }
+    });
+
+    inputPassword.addEventListener("input", () => {
+      const valor = inputPassword.value;
+      const valido = Utileria.validarPassword(valor);
+      
+      if (valor === "") {
+        inputPassword.classList.remove("valido", "invalido");
+        document.getElementById("errorPassword").textContent = "";
+      } else {
+        marcarCampo(inputPassword, valido);
+        if (valido) { document.getElementById("errorPassword").textContent = ""; } 
+        else { document.getElementById("errorPassword").textContent = "No cumple los requisitos mínimos."; }
+      }
+
+      // Vuelve a checar la confirmación si la contraseña original cambia
+      if (inputConfirmar.value !== "") {
+        let confirmarOk = Utileria.validarTextosIguales(valor, inputConfirmar.value);
+        marcarCampo(inputConfirmar, confirmarOk);
+        if (confirmarOk) { document.getElementById("errorConfirmar").textContent = ""; }
+        else { document.getElementById("errorConfirmar").textContent = "Las contraseñas no coinciden."; }
+      }
+
+      const liMayus = document.getElementById("regla-mayus");
+      if (/[A-Z]/.test(valor)) { liMayus.classList.add("cumple"); } else { liMayus.classList.remove("cumple"); }
+      const liMinus = document.getElementById("regla-minus");
+      if (/[a-z]/.test(valor)) { liMinus.classList.add("cumple"); } else { liMinus.classList.remove("cumple"); }
+      const liNumero = document.getElementById("regla-numero");
+      if (/[0-9]/.test(valor)) { liNumero.classList.add("cumple"); } else { liNumero.classList.remove("cumple"); }
+      const liEspecial = document.getElementById("regla-especial");
+      if (/[^A-Za-z0-9]/.test(valor)) { liEspecial.classList.add("cumple"); } else { liEspecial.classList.remove("cumple"); }
+      const liLongitud = document.getElementById("regla-longitud");
+      if (valor.length >= 8) { liLongitud.classList.add("cumple"); } else { liLongitud.classList.remove("cumple"); }
+    });
+
+    // --- Validación en vivo de Confirmar Contraseña ---
+    inputConfirmar.addEventListener("input", () => {
+      const valor1 = inputPassword.value;
+      const valor2 = inputConfirmar.value;
+      let valido = false;
+      if (valor2 !== "") { valido = Utileria.validarTextosIguales(valor1, valor2); }
+      marcarCampo(inputConfirmar, valido);
+      if (valido || valor2 === "") { document.getElementById("errorConfirmar").textContent = ""; } 
+      else { document.getElementById("errorConfirmar").textContent = "Las contraseñas no coinciden."; }
+    });
+
+    form.addEventListener("submit", (evento) => {
+      evento.preventDefault();
+
+      const nombre = inputNombre.value.trim();
+      const correo = inputCorreo.value.trim();
+      const telefono = inputTelefono.value.trim();
+      const fecha = inputFecha.value;
+      const cp = inputCP.value.trim();
+      const password = inputPassword.value;
+      const confirmar = inputConfirmar.value;
+
+      let nombreOk = false;
+      if (Utileria.soloLetras(nombre, true)) { nombreOk = true; }
+
+      let correoOk = false;
+      if (Utileria.validarCorreo(correo)) { correoOk = true; }
+
+      let telefonoOk = false;
+      if (Utileria.validarLongitud(telefono, 10)) {
+        const digitos = telefono.replace(/[^0-9]/g, "");
+        if (digitos.length === 10) { telefonoOk = true; }
+      }
+
+      let fechaOk = false;
+      if (fecha !== "") {
+        const edadValidar = Utileria.calcularEdad(fecha);
+        if (!isNaN(edadValidar)) { fechaOk = true; }
+      }
+
+      let cpOk = false;
+      if (Utileria.validarCodigoPostal(cp)) { cpOk = true; }
+
+      let passwordOk = false;
+      if (Utileria.validarPassword(password)) { passwordOk = true; }
+
+      let confirmarOk = false;
+      if (Utileria.validarTextosIguales(password, confirmar) && password !== "") { confirmarOk = true; }
+
+      // Agregamos las nuevas variables al IF principal
+      if (nombreOk === true && correoOk === true && telefonoOk === true && fechaOk === true && cpOk === true && passwordOk === true && confirmarOk === true) {
+        
+        const edad = Utileria.calcularEdad(fecha);
+        const mayor = Utileria.esMayorDeEdad(fecha);
+        const nombreFormateado = Utileria.capitalizarNombre(nombre);
+
+        document.getElementById("modalEdadNumero").textContent = edad;
+        document.getElementById("modalVeredictoTexto").textContent = nombreFormateado + ", con fecha de nacimiento " + fecha + ", tiene " + edad + " años.";
+        
+        const badge = document.getElementById("modalBadge");
+        if (mayor === true) {
+          badge.textContent = "Mayor de edad";
+          badge.className = "badge mayor";
+        } else {
+          badge.textContent = "Menor de edad";
+          badge.className = "badge menor";
+        }
+
+        document.getElementById("modalFondo").classList.add("activo");
+
+      } else {
+        alert("El formulario está incompleto o tiene errores. Revisa los campos marcados en rojo.");
+      }
+    });
+
+    const modalFondo = document.getElementById("modalFondo");
+    
+    document.getElementById("modalCerrar").addEventListener("click", () => {
+      modalFondo.classList.remove("activo");
+    });
+    
+    modalFondo.addEventListener("click", (e) => {
+      if (e.target === modalFondo) { modalFondo.classList.remove("activo"); }
+    });
+    
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { modalFondo.classList.remove("activo"); }
+    });
+  </script>
+</body>
+</html>

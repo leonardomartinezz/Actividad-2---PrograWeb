@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Utilería.js — Login</title>
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <div class="centro-vertical">
+    <div class="envoltura login-caja">
+
+      <div class="marca" style="justify-content:center; margin-bottom:24px;">
+        <div>
+          <h1>utilería.js</h1>
+          <p>Ingreso de datos para una cuenta ya registrada</p>
+        </div>
+      </div>
+
+      <section class="panel">
+        <h2 class="panel-titulo">Iniciar sesión</h2>
+        <form id="formLogin" novalidate>
+          <div class="campo">
+            <label for="loginCorreo">Correo electrónico</label>
+            <input type="text" id="loginCorreo" placeholder="pepitocraft@dominio.com" autocomplete="off" />
+            <span class="mensaje-error" id="errorLoginCorreo"></span>
+          </div>
+
+          <div class="campo">
+            <label for="loginPassword">Contraseña</label>
+            <input type="password" id="loginPassword" placeholder="Mínimo 8 caracteres" autocomplete="off" />
+            <span class="mensaje-error" id="errorLoginPassword"></span>
+          </div>
+
+          <button type="submit" class="boton boton-primario" style="width:100%;">Entrar</button>
+        </form>
+      </section>
+
+      <a class="login-link-vuelta" href="index.html">← Volver al formulario de registro</a>
+    </div>
+  </div>
+
+  <script src="js/utileria.js"></script>
+  <script>
+    const formLogin = document.getElementById("formLogin");
+    const correoInput = document.getElementById("loginCorreo");
+    const passwordInput = document.getElementById("loginPassword");
+
+    function marcarCampoLogin(input, esValido) {
+      if (esValido) {
+        input.classList.add("valido");
+        input.classList.remove("invalido");
+      } else {
+        input.classList.add("invalido");
+        input.classList.remove("valido");
+      }
+    }
+
+    correoInput.addEventListener("input", () => {
+      const valor = correoInput.value.trim();
+      const valido = Utileria.validarCorreo(valor);
+      
+      if (valor === "") {
+        correoInput.classList.remove("valido");
+        correoInput.classList.remove("invalido");
+        document.getElementById("errorLoginCorreo").textContent = "";
+      } else {
+        marcarCampoLogin(correoInput, valido);
+        if (valido) {
+          document.getElementById("errorLoginCorreo").textContent = "";
+        } else {
+          document.getElementById("errorLoginCorreo").textContent = "Correo con formato inválido.";
+        }
+      }
+    });
+
+    passwordInput.addEventListener("input", () => {
+      const valor = passwordInput.value;
+      const valido = Utileria.validarPassword(valor);
+      
+      if (valor === "") {
+        passwordInput.classList.remove("valido");
+        passwordInput.classList.remove("invalido");
+        document.getElementById("errorLoginPassword").textContent = "";
+      } else {
+        marcarCampoLogin(passwordInput, valido);
+        if (valido) {
+          document.getElementById("errorLoginPassword").textContent = "";
+        } else {
+          document.getElementById("errorLoginPassword").textContent = "Necesita mayúscula, minúscula, número, símbolo y 8+ caracteres.";
+        }
+      }
+    });
+
+    formLogin.addEventListener("submit", (evento) => {
+      evento.preventDefault();
+      
+      const correo = correoInput.value.trim();
+      const password = passwordInput.value;
+
+      let correoValido = false;
+      if (Utileria.validarCorreo(correo)) {
+        correoValido = true;
+      }
+
+      let passwordValido = false;
+      if (Utileria.validarPassword(password)) {
+        passwordValido = true;
+      }
+
+      if (correoValido === true && passwordValido === true) {
+        alert("Inicio de sesión válido (demo). Correo y contraseña cumplen el formato requerido.");
+      } else {
+        alert("Acceso denegado: revisa el formato del correo y/o la contraseña.");
+      }
+    });
+  </script>
+</body>
+</html>
