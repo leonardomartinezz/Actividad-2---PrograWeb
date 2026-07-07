@@ -63,13 +63,13 @@ Cada campo se valida al instante conforme el usuario escribe, encendiendo los bo
 
 Acceso protegido reutilizando las herramientas de la librería.
 
-![Login](img/cap2.png)
+![Login](img/cap3.png)
 
 ### 3. Ventana Modal (Cálculo de Edad)
 
 Al enviar el formulario correctamente, se calcula la edad exacta y se determina si el usuario es mayor o menor de edad.
 
-![Ventana Modal](img/cap3.png)
+![Ventana Modal](img/cap2.png)
 
 ## Video corto (Demo)
 
