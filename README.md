@@ -71,9 +71,7 @@ Al enviar el formulario correctamente, se calcula la edad exacta y se determina 
 
 ![Ventana Modal](img/cap2.png)
 
-## Video corto (Demo)
-
-En el siguiente enlace se encuentra el video demostrativo estilo comercial mostrando el problema, el uso y los resultados de la librería.
+## Video
 
 > **Nota:** Se actualizó el enlace el día de hoy ya que el video original sufrió un error de procesamiento en la plataforma y quedó corrupto.
 
